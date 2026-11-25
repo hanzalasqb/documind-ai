@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { deleteDoc, Doc, listDocs, Msg, streamChat, uploadDoc } from "./api";
+import { deleteDoc, Doc, IS_DEMO, listDocs, Msg, streamChat, uploadDoc } from "./api";
+
+const SUGGESTIONS = ["How much is the internet allowance?", "Is there a free trial?", "How big are the chunks?", "Can I get a refund on a monthly plan?"];
 
 export default function App() {
   const [docs, setDocs] = useState<Doc[]>([]);
@@ -44,8 +46,8 @@ export default function App() {
       <aside>
         <h1>📚 DocuMind <span>AI</span></h1>
         <label className="upload">
-          + Upload PDF / TXT / MD
-          <input type="file" multiple accept=".pdf,.txt,.md" onChange={(e) => onUpload(e.target.files)} hidden />
+          {IS_DEMO ? "+ Upload TXT / MD" : "+ Upload PDF / TXT / MD"}
+          <input type="file" multiple accept={IS_DEMO ? ".txt,.md" : ".pdf,.txt,.md"} onChange={(e) => onUpload(e.target.files)} hidden />
         </label>
         <p className="hint">{selected.length ? `Searching ${selected.length} selected` : "Searching all documents"}</p>
         <ul>
@@ -67,7 +69,15 @@ export default function App() {
         <div className="messages">
           {messages.length === 0 && (
             <div className="empty"><h2>Ask anything about your documents</h2>
-              <p>Answers are grounded in your files with numbered citations.</p></div>
+              <p>Answers are grounded in your files with numbered citations.</p>
+              {IS_DEMO && (
+                <>
+                  <p className="demo-note"><strong>Live demo</strong> · three sample documents are preloaded and everything runs in your browser
+                    (BM25 retrieval + extractive answers). Run it locally with an API key or Ollama for LLM answers. <a href="https://github.com/hanzalasqb/documind-ai">Source code</a></p>
+                  <div className="suggestions">{SUGGESTIONS.map((q) => <button key={q} onClick={() => setInput(q)}>{q}</button>)}</div>
+                </>
+              )}
+            </div>
           )}
           {messages.map((m, i) => (
             <div key={i} className={`msg ${m.role}`}>

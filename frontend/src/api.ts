@@ -2,14 +2,17 @@ export type Doc = { id: string; filename: string; chunks: number };
 export type Source = { document_id: string; filename: string; chunk_index: number; score: number; text: string };
 export type Msg = { role: "user" | "assistant"; content: string; sources?: Source[] };
 
-const BASE = import.meta.env.VITE_API_URL ?? "";
+import { demoApi } from "./demo";
 
-export async function listDocs(): Promise<Doc[]> {
+const BASE = import.meta.env.VITE_API_URL ?? "";
+export const IS_DEMO = import.meta.env.VITE_DEMO === "true";
+
+async function httpListDocs(): Promise<Doc[]> {
   const r = await fetch(`${BASE}/api/documents`);
   return r.json();
 }
 
-export async function uploadDoc(file: File): Promise<Doc> {
+async function httpUploadDoc(file: File): Promise<Doc> {
   const fd = new FormData();
   fd.append("file", file);
   const r = await fetch(`${BASE}/api/documents`, { method: "POST", body: fd });
@@ -17,12 +20,12 @@ export async function uploadDoc(file: File): Promise<Doc> {
   return r.json();
 }
 
-export async function deleteDoc(id: string) {
+async function httpDeleteDoc(id: string) {
   await fetch(`${BASE}/api/documents/${id}`, { method: "DELETE" });
 }
 
 /** Streams an answer over SSE. Calls onSources once, onToken per token. */
-export async function streamChat(
+async function httpStreamChat(
   question: string,
   history: Msg[],
   documentIds: string[] | null,
@@ -58,3 +61,6 @@ export async function streamChat(
     }
   }
 }
+
+const httpApi = { listDocs: httpListDocs, uploadDoc: httpUploadDoc, deleteDoc: httpDeleteDoc, streamChat: httpStreamChat };
+export const { listDocs, uploadDoc, deleteDoc, streamChat } = IS_DEMO ? demoApi : httpApi;

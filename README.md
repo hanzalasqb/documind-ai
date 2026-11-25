@@ -13,9 +13,15 @@ Upload PDFs, notes or policies and get grounded answers with numbered citations,
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+**[▶ Live demo](https://hanzalasqb.github.io/documind-ai/)** · runs in your browser with sample documents
+
 </div>
 
 ---
+
+## 🌐 Live demo mode
+
+The [live demo](https://hanzalasqb.github.io/documind-ai/) is the same React app built with `VITE_DEMO=true` and deployed to GitHub Pages by GitHub Actions. It preloads three sample documents and runs a browser-only RAG pipeline: a TypeScript port of the backend chunker, **BM25** retrieval in place of embeddings, and extractive answers with `[n]` citations in place of the LLM, streamed token by token. You can upload your own `.txt` / `.md` files; they stay in the browser tab. Run it locally with `npm run dev:demo` in `frontend/`.
 
 ## ✨ Features
 
